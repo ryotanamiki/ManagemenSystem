@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>User list</title>
+
+</head>
+
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (let i=0; i < users.length; i++) { %>
+                <tr>
+                    <td>
+                        <%= users[i].name %>
+                    </td>
+                    <td>
+                        <%= users[i].email %>
+                    </td>
+                    <td><a href="/edit/<%= users[i].id %>">更新</a></td>
+                    <td><a href="/delete/<%= users[i].id %>">削除</a></td>
+                </tr>
+                <% } %>
+        </tbody>
+    </table>
+
+    <p><a href="/create">ユーザーの追加</a></p>
+
+    <form id="filterForm">
+        <input type="text" id="filterText" placeholder="名前を入力">
+        <button type="button" id="filterButton">絞り込む</button>
+    </form>
+
+<script>
+    let users = JSON.parse('<%= JSON.stringify(users) %>'.replace(/&#34;/g, '"'));
+    function getUserInfo() {
+        let userName = document.getElementById('userName').value;
+        let user = users.find(user => user.id.toString() === userName);
+
+        if (user) {
+            let userInformation = document.getElementById('userInfo');
+            userInformation.innerHTML = `
+            <p>Name: ${user.name}</p>
+            <p>Email: ${user.email}</p>
+            `;
+        } else {
+            let userInformation = document.getElementById('userInfo');
+            userInformation.innerHTML = `
+            <p>Not found.</p>
+            `;
+        }
+    }
+
+    const filterText = document.querySelector('#filterText');
+    const filterButton = document.querySelector('#filterButton');
+    const tableRows = document.querySelectorAll('tbody tr');
+
+    function filterRows(keyword) {
+        tableRows.forEach((row) => {
+            const nameCell = row.querySelector('td:first-child');
+            if (nameCell) {
+                const name = nameCell.textContent.toLowerCase();
+                if (name.includes(keyword)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    filterButton.addEventListener('click', () => {
+        const keyword = filterText.value.trim().toLowerCase();
+        filterRows(keyword);
+    });
+
+    filterText.addEventListener('input', () => {
+    });
+</script>
+</body>
+
+</html>
