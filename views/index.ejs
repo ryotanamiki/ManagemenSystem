@@ -11,18 +11,46 @@
     <table>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Email</th>
+                <th>id</th>
+                <th>name</th>
+                <th>kana_name</th>
+                <th>gender</th>
+                <th>email</th>
+                <th>phone</th>
+                <th>address</th>
+                <th>workplace</th>
+                <th>household</th>
             </tr>
         </thead>
         <tbody>
             <% for (let i=0; i < users.length; i++) { %>
                 <tr>
                     <td>
+                        <%= users[i].id %>
+                            </td>
+                            <td>
                         <%= users[i].name %>
                     </td>
                     <td>
+                        <%= users[i].kana_name %>
+                            </td>
+                            <td>
+                                <%= users[i].gender %>
+                            </td>
+                            <td>
                         <%= users[i].email %>
+                    </td>
+                    <td>
+                        <%= users[i].phone %>
+                    </td>
+                    <td>
+                        <%= users[i].address %>
+                    </td>
+                    <td>
+                        <%= users[i].workplace %>
+                    </td>
+                    <td>
+                        <%= users[i].household %>
                     </td>
                     <td><a href="/edit/<%= users[i].id %>">更新</a></td>
                     <td><a href="/delete/<%= users[i].id %>">削除</a></td>
@@ -64,7 +92,7 @@
 
     function filterRows(keyword) {
         tableRows.forEach((row) => {
-            const nameCell = row.querySelector('td:first-child');
+            const nameCell = row.querySelector('td:nth-child(2)');
             if (nameCell) {
                 const name = nameCell.textContent.toLowerCase();
                 if (name.includes(keyword)) {
