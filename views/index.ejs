@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>User list</title>
+    <title>ManagementSystem</title>
 
 </head>
 
@@ -54,6 +54,7 @@
                     </td>
                     <td><a href="/edit/<%= users[i].id %>">更新</a></td>
                     <td><a href="/delete/<%= users[i].id %>">削除</a></td>
+                    <td><button class="select-button">選択</button></td>
                 </tr>
                 <% } %>
         </tbody>
@@ -65,6 +66,10 @@
         <input type="text" id="filterText" placeholder="名前を入力">
         <button type="button" id="filterButton">絞り込む</button>
     </form>
+    <div id="remove">
+        <h3>選択した情報一覧</h3>
+        <ul id="selectedList"></ul>
+    </div>
 
 <script>
     let users = JSON.parse('<%= JSON.stringify(users) %>'.replace(/&#34;/g, '"'));
@@ -75,17 +80,17 @@
         if (user) {
             let userInformation = document.getElementById('userInfo');
             userInformation.innerHTML = `
-            <p>Name: ${user.name}</p>
-            <p>Email: ${user.email}</p>
-            `;
+    <p>Name: ${user.name}</p>
+    <p>Email: ${user.email}</p>
+    `;
         } else {
             let userInformation = document.getElementById('userInfo');
             userInformation.innerHTML = `
-            <p>Not found.</p>
-            `;
+    <p>Not found.</p>
+    `;
         }
     }
-
+                                                /*------------情報絞り込み機能------------*/
     const filterText = document.querySelector('#filterText');
     const filterButton = document.querySelector('#filterButton');
     const tableRows = document.querySelectorAll('tbody tr');
@@ -111,6 +116,33 @@
 
     filterText.addEventListener('input', () => {
     });
+                                    /*------------情報を格納する機能-----------*/
+                                    const selectedInfo = [];
+
+                                    function buttonClick(event) {
+                                        const selected = event.target.closest('tr');
+                                        if (selected) {
+                                            const userId = selected.querySelector('td:first-child').textContent;
+                                            const userInfo = users.find(user => user.id === parseInt(userId));
+
+                                            if (userInfo) {
+                                                selectedInfo.push(userInfo);
+                                                const selectedList = document.querySelector('#selectedList');
+                                                const listitem = document.createElement('li');
+                                                listitem.textContent =
+                                                    `ID: ${userInfo.id}, 名前: ${userInfo.name}, カナ: ${userInfo.kana_name}, gender: ${userInfo.gender},
+                                        email: ${userInfo.email}, phone: ${userInfo.phone}, address: ${userInfo.address}, workspace: ${userInfo.workplace}, household: ${userInfo.household}`;
+                                                selectedList.appendChild(listitem);
+                                                selected.remove();
+                                            }
+                                        }
+                                    }
+
+                                    const selectedButtons = document.querySelectorAll('.select-button');
+
+                                    selectedButtons.forEach(button => {
+                                        button.addEventListener('click', buttonClick);
+                                    });
 </script>
 </body>
 
