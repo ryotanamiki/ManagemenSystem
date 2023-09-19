@@ -66,6 +66,11 @@
         <input type="text" id="filterText" placeholder="名前を入力">
         <button type="button" id="filterButton">絞り込む</button>
     </form>
+<button id="genderStatus">性別統計</button>
+<button id="workplaceStatus">職場統計</button>
+<button id="householdStatus">世帯人数統計</button>
+<div id="resultStatus"></div>
+
     <div id="remove">
         <h3>選択した情報一覧</h3>
         <ul id="selectedList"></ul>
@@ -90,7 +95,7 @@
     `;
         }
     }
-                                                /*------------情報絞り込み機能------------*/
+    /*------------情報絞り込み機能------------*/
     const filterText = document.querySelector('#filterText');
     const filterButton = document.querySelector('#filterButton');
     const tableRows = document.querySelectorAll('tbody tr');
@@ -116,33 +121,78 @@
 
     filterText.addEventListener('input', () => {
     });
-                                    /*------------情報を格納する機能-----------*/
-                                    const selectedInfo = [];
+    /*------------情報を格納する機能-----------*/
+    const selectedInfo = [];
 
-                                    function buttonClick(event) {
-                                        const selected = event.target.closest('tr');
-                                        if (selected) {
-                                            const userId = selected.querySelector('td:first-child').textContent;
-                                            const userInfo = users.find(user => user.id === parseInt(userId));
+    function buttonClick(event) {
+        const selected = event.target.closest('tr');
+        if (selected) {
+            const userId = selected.querySelector('td:first-child').textContent;
+            const userInfo = users.find(user => user.id === parseInt(userId));
 
-                                            if (userInfo) {
-                                                selectedInfo.push(userInfo);
-                                                const selectedList = document.querySelector('#selectedList');
-                                                const listitem = document.createElement('li');
-                                                listitem.textContent =
-                                                    `ID: ${userInfo.id}, 名前: ${userInfo.name}, カナ: ${userInfo.kana_name}, gender: ${userInfo.gender},
-                                        email: ${userInfo.email}, phone: ${userInfo.phone}, address: ${userInfo.address}, workspace: ${userInfo.workplace}, household: ${userInfo.household}`;
-                                                selectedList.appendChild(listitem);
-                                                selected.remove();
-                                            }
-                                        }
-                                    }
+        if (userInfo) {
+            selectedInfo.push(userInfo);
+            const selectedList = document.querySelector('#selectedList');
+            const listitem = document.createElement('li');
+            listitem.textContent =
+                `ID: ${userInfo.id}, 名前: ${userInfo.name}, カナ: ${userInfo.kana_name}, gender: ${userInfo.gender}, email: ${userInfo.email}, phone: ${userInfo.phone}, address: ${userInfo.address}, workspace: ${userInfo.workplace}, household: ${userInfo.household}`;
+            selectedList.appendChild(listitem);
+            selected.remove();
+        }
+    }
+}
+    const selectedButtons = document.querySelectorAll('.select-button');
 
-                                    const selectedButtons = document.querySelectorAll('.select-button');
+    selectedButtons.forEach(button => {
+        button.addEventListener('click', buttonClick);
+    });
+    /*------------各項目内容を統計する機能-----------*/
+    // ボタンをクリックしたときの処理
+    document.getElementById('genderStatus').addEventListener('click', calculateGenderStats);
+    document.getElementById('workplaceStatus').addEventListener('click', calculateWorkplaceStats);
+    document.getElementById('householdStatus').addEventListener('click', calculateHouseholdStats);
 
-                                    selectedButtons.forEach(button => {
-                                        button.addEventListener('click', buttonClick);
-                                    });
+    function calculateGenderStats() {
+        const maleCount = users.filter(user => user.gender === '男性').length;
+        const femaleCount = users.filter(user => user.gender === '女性').length;
+        displayStatistics(`男性: ${maleCount} 人, 女性: ${femaleCount} 人`);
+    }
+
+    function calculateWorkplaceStats() {
+        const workplaceStats = {};
+        users.forEach(user => {
+            const workplace = user.workplace;
+            if (workplace in workplaceStats) {
+                workplaceStats[workplace]++;
+            } else {
+                workplaceStats[workplace] = 1;
+            }
+        });
+        displayStatistics('職場統計', workplaceStats);
+    }
+
+    function calculateHouseholdStats() {
+        const householdStats = {};
+        users.forEach(user => {
+            const household = user.household;
+            if (household in householdStats) {
+                householdStats[household]++;
+            } else {
+                householdStats[household] = 1;
+            }
+        });
+        displayStatistics('世帯統計', householdStats);
+    }
+    function displayStatistics(title, data) {
+        const statisticsResults = document.getElementById('resultStatus');
+        statisticsResults.innerHTML = `<h3>${title}</h3>`;
+        if (data) {
+            for (const key in data) {
+                statisticsResults.innerHTML += `<p>${key}: ${data[key]} 人</p>`;
+            }
+        }
+    }
+
 </script>
 </body>
 
